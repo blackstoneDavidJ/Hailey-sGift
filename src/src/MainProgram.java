@@ -18,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import java.awt.Font;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -55,10 +54,6 @@ public class MainProgram extends JFrame {
 	private JPanel contentPane;
 	private JPanel panelInScroll;
 	private JList<String> jList;
-	private JTextField nameField;
-	private JTextField descField;
-	private JTextField dateField;
-	private JTextField creatorField;
 	private File fileToSave = null;
 	private FileOutputStream f = null;
 	private FileInputStream fi = null;
@@ -77,6 +72,9 @@ public class MainProgram extends JFrame {
 	private JTextField recordFilePath = new JTextField("");
 	private JTextField soundFilePath = new JTextField("");
 	private File folder = null;
+	private JTextField recordDesc;
+	private JTextField recordDate;
+	private JTextField recordCreator;
 
 	// program main to call the MainProgram
 	public static void main(String[] args) {
@@ -121,57 +119,10 @@ public class MainProgram extends JFrame {
 		tabbedPane.setBackground(Color.ORANGE);
 		tabbedPane.setForeground(Color.DARK_GRAY);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
-
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.ORANGE);
-		tabbedPane.addTab("Add!", null, panel, null);
 		JPanel recordPanel = new JPanel();
 		recordPanel.setBackground(Color.ORANGE);
 		tabbedPane.addTab("Record!", null, recordPanel, null);
 		recordPanel.setLayout(null);
-		panel.setLayout(null);
-
-		JLabel lblNewLabel = new JLabel("Name:");
-		lblNewLabel.setBackground(Color.WHITE);
-		lblNewLabel.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 16));
-		lblNewLabel.setBounds(10, 11, 63, 17);
-		panel.add(lblNewLabel);
-
-		JLabel lblNewLabel_1 = new JLabel("Description:");
-		lblNewLabel_1.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 16));
-		lblNewLabel_1.setBounds(10, 78, 105, 14);
-		panel.add(lblNewLabel_1);
-
-		JLabel lblNewLabel_2 = new JLabel("Date:");
-		lblNewLabel_2.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 16));
-		lblNewLabel_2.setBounds(10, 150, 46, 14);
-		panel.add(lblNewLabel_2);
-
-		JLabel lblNewLabel_3 = new JLabel("Creator:");
-		JFrame parentFrame = new JFrame();
-		lblNewLabel_3.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 16));
-		lblNewLabel_3.setBounds(10, 228, 74, 14);
-		panel.add(lblNewLabel_3);
-
-		nameField = new JTextField();
-		nameField.setBounds(125, 11, 148, 20);
-		panel.add(nameField);
-		nameField.setColumns(10);
-
-		descField = new JTextField();
-		descField.setBounds(125, 71, 148, 32);
-		panel.add(descField);
-		descField.setColumns(10);
-
-		dateField = new JTextField();
-		dateField.setBounds(125, 147, 148, 20);
-		panel.add(dateField);
-		dateField.setColumns(10);
-
-		creatorField = new JTextField();
-		creatorField.setBounds(125, 225, 148, 20);
-		panel.add(creatorField);
-		creatorField.setColumns(10);
 
 		panel_1.setBackground(Color.ORANGE);
 		tabbedPane.addTab("Play!", null, panel_1, null);
@@ -234,36 +185,36 @@ public class MainProgram extends JFrame {
 		panel_1.add(dateLabel);
 
 		JLabel lblNewLabel_4 = new JLabel("Record Name:");
-		lblNewLabel_4.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 12));
-		lblNewLabel_4.setBounds(10, 32, 82, 14);
+		lblNewLabel_4.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 11));
+		lblNewLabel_4.setBounds(10, 34, 82, 14);
 		recordPanel.add(lblNewLabel_4);
 
 		recordName = new JTextField();
-		recordName.setBounds(113, 32, 87, 20);
+		recordName.setBounds(113, 32, 128, 20);
 		recordPanel.add(recordName);
 		recordName.setColumns(10);
 
 		JLabel lblNewLabel_5 = new JLabel("Record Length:");
 		lblNewLabel_5.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 12));
-		lblNewLabel_5.setBounds(10, 62, 97, 20);
+		lblNewLabel_5.setBounds(318, 142, 97, 20);
 		recordPanel.add(lblNewLabel_5);
 
 		recordLength = new JTextField();
 		recordLength.setToolTipText("seconds");
-		recordLength.setBounds(113, 63, 87, 20);
+		recordLength.setBounds(447, 143, 86, 20);
 		recordPanel.add(recordLength);
 		recordLength.setColumns(10);
 
 		// recording sound button
 		JButton recordButton = new JButton("Record!");
 		recordButton.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 16));
-		recordButton.setBounds(210, 32, 303, 268);
+		recordButton.setBounds(318, 32, 215, 103);
 		recordButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!recordFilePath.getText().equals("")) {
 					SoundRecorder recorder = new SoundRecorder(recordFilePath.getText());
 					recorder.setName(recordName.getText());
-
+	
 					if (recordLength.getText().equals("")) {
 						recordLength.setText("5000");
 					}
@@ -272,10 +223,10 @@ public class MainProgram extends JFrame {
 						if(recordLength.getText() != null){
 							long length = ((Long.parseLong(recordLength.getText())) * 1000);
 							recorder.setRecordLength(length);
-							recorder.record();
+							fileToSave = recorder.record();
 						}
 					}
-
+	
 					catch (LineUnavailableException e1) {
 						e1.printStackTrace();
 					}
@@ -284,7 +235,7 @@ public class MainProgram extends JFrame {
 						System.out.println("length is not a number");
 					}
 				}
-
+				
 				else {
 					System.out.println("No record file path selected");
 				}
@@ -296,15 +247,35 @@ public class MainProgram extends JFrame {
 		// record sound labels
 		JLabel lblNewLabel_6 = new JLabel("Record a Sound!");
 		lblNewLabel_6.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 18));
-		lblNewLabel_6.setBounds(298, 7, 234, 14);
+		lblNewLabel_6.setBounds(212, 7, 234, 14);
 		recordPanel.add(lblNewLabel_6);
-		JButton submitBtn = new JButton("Add the Sound! :)");
-
-		// submit new sound entry button
-		submitBtn.addActionListener(new ActionListener() {
+		
+		recordDesc = new JTextField();
+		recordDesc.setBounds(113, 63, 128, 38);
+		recordPanel.add(recordDesc);
+		recordDesc.setColumns(10);
+		
+		JLabel lblNewLabel_10 = new JLabel("Record Description:");
+		lblNewLabel_10.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 11));
+		lblNewLabel_10.setBounds(10, 59, 107, 37);
+		recordPanel.add(lblNewLabel_10);
+		
+		JLabel lblNewLabel_11 = new JLabel("Record Date:");
+		lblNewLabel_11.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 11));
+		lblNewLabel_11.setBounds(10, 111, 97, 14);
+		recordPanel.add(lblNewLabel_11);
+		
+		recordDate = new JTextField();
+		recordDate.setBounds(113, 112, 128, 20);
+		recordPanel.add(recordDate);
+		recordDate.setColumns(10);
+		
+		JButton recordSubmit = new JButton("Submit!");
+		recordSubmit.setBounds(133, 188, 313, 112);
+		recordSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Sound sound = new Sound(nameField.getText(), descField.getText(), creatorField.getText(),
-						dateField.getText(), fileToSave);
+				Sound sound = new Sound(recordName.getText(), recordDesc.getText(), recordCreator.getText(),
+						recordDate.getText(), fileToSave);
 				try {
 					System.out.println(writeObjectToFile(sound));
 				}
@@ -314,25 +285,17 @@ public class MainProgram extends JFrame {
 				}
 			}
 		});
-
-		submitBtn.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 16));
-		submitBtn.setBounds(296, 52, 253, 207);
-		panel.add(submitBtn);
-
-		// button to select a .wav file from directory in JFileChooser
-		JButton addSoundBtn = new JButton("Pick the Sound");
-		addSoundBtn.addActionListener(e -> {
-			JFileChooser fileChooser = new JFileChooser(recordFilePath.getText());
-			fileChooser.setDialogTitle("Specify a file to save");
-			int userSelection = fileChooser.showSaveDialog(parentFrame);
-			if (userSelection == JFileChooser.APPROVE_OPTION) {
-				fileToSave = fileChooser.getSelectedFile();
-			}
-		});
+		recordPanel.add(recordSubmit);
 		
-		addSoundBtn.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 16));
-		addSoundBtn.setBounds(125, 276, 148, 49);
-		panel.add(addSoundBtn);
+		JLabel lblNewLabel_12 = new JLabel("Record Creator:");
+		lblNewLabel_12.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 11));
+		lblNewLabel_12.setBounds(10, 146, 97, 14);
+		recordPanel.add(lblNewLabel_12);
+		
+		recordCreator = new JTextField();
+		recordCreator.setBounds(113, 143, 128, 20);
+		recordPanel.add(recordCreator);
+		recordCreator.setColumns(10);
 
 		// calls the SoundRecorder class to play a selected sound file
 		JButton playButton = new JButton("Play!");
@@ -586,11 +549,8 @@ public class MainProgram extends JFrame {
 			o.writeObject(obj);
 
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
-			result = "File not found";
+			result = "Sound folder does not exist";
 		} catch (IOException e) {
-			System.out.println("Error initializing stream");
-			e.printStackTrace();
 			result = "Error initializing stream";
 		}
 
