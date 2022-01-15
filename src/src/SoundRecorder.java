@@ -16,6 +16,7 @@ public class SoundRecorder
 	private static String name;
 	private static long recordLength;
 	private static String filePath;
+	private static File wavFile;
 	
 	public SoundRecorder(String filePath)
 	{
@@ -42,7 +43,7 @@ public class SoundRecorder
 		SoundRecorder.recordLength = recordLength;
 	}
 	
-	public void record() throws LineUnavailableException
+	public File record() throws LineUnavailableException
 	{
 		AudioFormat format = new AudioFormat(48000, 16, 2, true, true);
 		DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
@@ -61,7 +62,7 @@ public class SoundRecorder
 			public void run()
 			{
 				AudioInputStream audioStream = new AudioInputStream(targetDataLine);
-				File wavFile = new File(filePath +"/" +name+".wav");
+				wavFile = new File(name+".wav");
 				try 
 				{
 					AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE, wavFile);
@@ -87,6 +88,8 @@ public class SoundRecorder
 		{
 			e.printStackTrace();
 		}
+		
+		return wavFile;
 	}
 	
 	public static void main(String[] args) throws LineUnavailableException
