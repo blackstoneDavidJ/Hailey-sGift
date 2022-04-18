@@ -29,21 +29,15 @@ public class Player implements LineListener {
      * Play a given audio file.
      * @param audioFilePath Path of the audio file.
      */
-    void play(File soundFile) {;
+    void play(File soundFile) {
  
         try {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
- 
             AudioFormat format = audioStream.getFormat();
- 
             DataLine.Info info = new DataLine.Info(Clip.class, format);
- 
             Clip audioClip = (Clip) AudioSystem.getLine(info);
- 
             audioClip.addLineListener(this);
- 
             audioClip.open(audioStream);
-             
             audioClip.start();
              
             while (!playCompleted) {

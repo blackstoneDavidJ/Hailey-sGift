@@ -114,7 +114,7 @@ public class MainProgram extends JFrame {
 		panelInScroll = new JPanel(grid);
 		panelInScroll.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 
-		System.out.println("test1 " + soundList.size());
+		System.out.println("list Size: " + soundList.size());
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBackground(Color.ORANGE);
 		tabbedPane.setForeground(Color.DARK_GRAY);
@@ -126,14 +126,12 @@ public class MainProgram extends JFrame {
 
 		panel_1.setBackground(Color.ORANGE);
 		tabbedPane.addTab("Play!", null, panel_1, null);
-		tabbedPane.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent e)
-			{
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
 				refreshListing();
 			}
 		});
-		
+
 		panel_1.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -214,28 +212,28 @@ public class MainProgram extends JFrame {
 				if (!recordFilePath.getText().equals("")) {
 					SoundRecorder recorder = new SoundRecorder(recordFilePath.getText());
 					recorder.setName(recordName.getText());
-	
+
 					if (recordLength.getText().equals("")) {
 						recordLength.setText("5000");
 					}
-					
+
 					try {
-						if(recordLength.getText() != null){
+						if (recordLength.getText() != null) {
 							long length = ((Long.parseLong(recordLength.getText())) * 1000);
 							recorder.setRecordLength(length);
 							fileToSave = recorder.record();
 						}
 					}
-	
+
 					catch (LineUnavailableException e1) {
 						e1.printStackTrace();
 					}
-					
-					catch(NumberFormatException n) {
+
+					catch (NumberFormatException n) {
 						System.out.println("length is not a number");
 					}
 				}
-				
+
 				else {
 					System.out.println("No record file path selected");
 				}
@@ -249,27 +247,27 @@ public class MainProgram extends JFrame {
 		lblNewLabel_6.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 18));
 		lblNewLabel_6.setBounds(212, 7, 234, 14);
 		recordPanel.add(lblNewLabel_6);
-		
+
 		recordDesc = new JTextField();
 		recordDesc.setBounds(113, 63, 128, 38);
 		recordPanel.add(recordDesc);
 		recordDesc.setColumns(10);
-		
+
 		JLabel lblNewLabel_10 = new JLabel("Record Description:");
 		lblNewLabel_10.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 11));
 		lblNewLabel_10.setBounds(10, 59, 107, 37);
 		recordPanel.add(lblNewLabel_10);
-		
+
 		JLabel lblNewLabel_11 = new JLabel("Record Date:");
 		lblNewLabel_11.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 11));
 		lblNewLabel_11.setBounds(10, 111, 97, 14);
 		recordPanel.add(lblNewLabel_11);
-		
+
 		recordDate = new JTextField();
 		recordDate.setBounds(113, 112, 128, 20);
 		recordPanel.add(recordDate);
 		recordDate.setColumns(10);
-		
+
 		JButton recordSubmit = new JButton("Submit!");
 		recordSubmit.setBounds(133, 188, 313, 112);
 		recordSubmit.addActionListener(new ActionListener() {
@@ -286,12 +284,12 @@ public class MainProgram extends JFrame {
 			}
 		});
 		recordPanel.add(recordSubmit);
-		
+
 		JLabel lblNewLabel_12 = new JLabel("Record Creator:");
 		lblNewLabel_12.setFont(new Font("Microsoft JhengHei UI", Font.PLAIN, 11));
 		lblNewLabel_12.setBounds(10, 146, 97, 14);
 		recordPanel.add(lblNewLabel_12);
-		
+
 		recordCreator = new JTextField();
 		recordCreator.setBounds(113, 143, 128, 20);
 		recordPanel.add(recordCreator);
@@ -362,9 +360,28 @@ public class MainProgram extends JFrame {
 		panel_2.add(savePathButton);
 	}
 
+	private void reinitializeSoundPaths() {
+		if (!soundMap.isEmpty()) {
+			for (int i = 0; i < soundList.size(); i++) {
+				Sound sound = soundMap.get(soundList.get(i));
+				String soundPath = sound.getSoundFile().getAbsolutePath();
+				if (!soundPath.contains(soundFilePath.getText())) {
+					sound.setSoundFile(new File(recordFilePath.getText() + "/" + sound.getName() + ".wav"));
+					try {
+						writeObjectToFile(sound);
+						System.out.println("New sound added from outside source:  " +sound.getName());
+					}
+
+					catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
 	// refreshes the play page with listings
-	private void refreshListing() 
-	{
+	private void refreshListing() {
 		if (!soundFilePath.getText().equals("")) {
 			folder = new File(soundFilePath.getText());
 			listFilesForFolder(folder);
@@ -372,7 +389,6 @@ public class MainProgram extends JFrame {
 	}
 
 	// checks the file system if file path files exist
-	// returns true or false
 	@SuppressWarnings("hiding")
 	private boolean checkIfExist() {
 		File file1 = new File("soundPath.txt");
@@ -406,7 +422,7 @@ public class MainProgram extends JFrame {
 		}
 
 		catch (FileNotFoundException e) {
-			System.out.println("file(s) not found.");
+			System.out.println("No Sound file(s) not found.");
 			result = false;
 		}
 
@@ -465,7 +481,7 @@ public class MainProgram extends JFrame {
 	}
 
 	// fills map with files from directory
-	public void listFilesForFolder(final File folder) {
+	private void listFilesForFolder(final File folder) {
 		soundMap.clear();
 		Sound newSound = null;
 		for (final File fileEntry : folder.listFiles()) {
@@ -474,13 +490,7 @@ public class MainProgram extends JFrame {
 			}
 
 			else {
-				try {
-					newSound = readObjectFromFile(fileEntry);
-				}
-
-				catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
+				newSound = readObjectFromFile(fileEntry);
 
 				soundMap.put(newSound.getName(), newSound);
 			}
@@ -495,10 +505,9 @@ public class MainProgram extends JFrame {
 	// creates an item entry you can select
 	// creates descriptive text boxes for selected sound
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void itemCreator() {
-		List<Sound> list = new ArrayList<Sound>(soundMap.values());
+	private void itemCreator() {
+		Iterator<Sound> iter = new ArrayList<Sound>(soundMap.values()).iterator();
 		ArrayList<String> tmp = new ArrayList<String>();
-		Iterator<Sound> iter = list.iterator();
 		while (iter.hasNext()) {
 			Sound newSoundName = ((Sound) iter.next());
 			soundList.add(newSoundName.getName());
@@ -506,6 +515,7 @@ public class MainProgram extends JFrame {
 		}
 
 		System.out.println("Sound list size: " + soundList.size());
+		reinitializeSoundPaths();
 		soundList.clear();
 
 		if (jList != null) {
@@ -540,7 +550,7 @@ public class MainProgram extends JFrame {
 	}
 
 	// creates and writes an object to file
-	public String writeObjectToFile(Sound obj) throws URISyntaxException {
+	private String writeObjectToFile(Sound obj) throws URISyntaxException {
 		String result = "Successfully writen!";
 
 		try {
@@ -558,7 +568,7 @@ public class MainProgram extends JFrame {
 	}
 
 	// Read sound object from given file
-	public Sound readObjectFromFile(File file) throws URISyntaxException {
+	private Sound readObjectFromFile(File file) {
 		Sound sound = null;
 		try {
 			fi = new FileInputStream(file);
